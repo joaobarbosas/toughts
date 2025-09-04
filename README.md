@@ -1,6 +1,4 @@
-Show, João 👌. Vou montar um **README em inglês** já pronto pra colocar no teu projeto **Thoughts Manager** no GitHub. Incluí seções de descrição, features, instalação, uso e tech stack — do jeito que chama atenção de cliente/recrutador.
 
----
 
 # Thoughts Manager
 
