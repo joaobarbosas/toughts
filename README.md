@@ -58,7 +58,7 @@ Then try [http://localhost:3000](http://localhost:3000).
 
 ## Repository notes
 
-- The repository currently contains a committed `node_modules/` directory, although it is listed in `.gitignore`. Removing already-tracked dependencies should be handled in a separate cleanup commit.
+- Installed `node_modules/` dependencies are excluded from version control. Run `npm install` after cloning.
 - The `npm test` script is a placeholder; **no automated test suite is configured**.
 - Database configuration is hardcoded for local development and should be moved to environment variables before deployment.
 - This is an educational application, not a production-ready authentication service.
