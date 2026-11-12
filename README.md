@@ -32,15 +32,15 @@ Thoughts Manager is a **learning project** for building a server-rendered web ap
 
 ## Run locally
 
-**Requirements:** Node.js, npm and a running MySQL server.
+**Requirements:** Node.js 22 or newer, npm and a running MySQL server.
 
 ```bash
 git clone https://github.com/joaobarbosas/toughts.git
 cd toughts
-npm install
+npm ci
 ```
 
-The existing `db/conn.js` expects a local MySQL database named `toughts`, username `root` and an empty password. Create the database locally and adjust that connection file for **your own local environment** before running. Never commit actual passwords.
+Copy `.env.example` to `.env` and configure `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` and a random `SESSION_SECRET` of at least 32 characters. Use a dedicated local database user and never commit actual passwords.
 
 ```sql
 CREATE DATABASE IF NOT EXISTS toughts;
@@ -49,18 +49,18 @@ CREATE DATABASE IF NOT EXISTS toughts;
 Start the application:
 
 ```bash
-npm start
+node --env-file=.env index.js
 ```
 
-Then try [http://localhost:3000](http://localhost:3000).
+Then try [http://127.0.0.1:3001](http://127.0.0.1:3001).
 
-> The application uses `nodemon` in its start script. These instructions describe the repository's current configuration; successful end-to-end startup has not been independently verified.
+> `npm start` runs Node with environment variables already loaded; `npm run dev` uses nodemon. The isolated MySQL CI smoke test verifies startup, registration, login, CRUD and cross-user edit rejection.
 
 ## Repository notes
 
-- Installed `node_modules/` dependencies are excluded from version control. Run `npm install` after cloning.
-- The `npm test` script is a placeholder; **no automated test suite is configured**.
-- Database configuration is hardcoded for local development and should be moved to environment variables before deployment.
+- Installed `node_modules/` dependencies are excluded from version control. Run `npm ci` after cloning.
+- `npm test` runs the ownership regression tests; CI also enables the HTTP/MySQL integration test.
+- Database and session configuration use environment variables. `.env` files are ignored.
 - This is an educational application, not a production-ready authentication service.
 
 ## Author
