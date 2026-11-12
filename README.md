@@ -66,3 +66,36 @@ Then try [http://localhost:3000](http://localhost:3000).
 ## Author
 
 **João Pedro** · [GitHub](https://github.com/joaobarbosas) · [LinkedIn](https://linkedin.com/in/joaopedrosanchess)
+
+## Test configuration and security fixes
+
+Use Node.js 22 or newer. Copy `.env.example` to `.env`, set the database
+credentials and generate a random `SESSION_SECRET` of at least 32 characters.
+Create an empty MySQL database first; startup synchronizes the learning schema.
+Load configuration explicitly with Node's built-in environment-file support:
+
+```bash
+npm ci
+node --env-file=.env index.js
+# http://127.0.0.1:3001
+npm test
+```
+
+The edit form and update query both restrict access to the session user.
+Session cookies use HttpOnly and SameSite=Lax; production also requires HTTPS
+and sets Secure (configure the trusted reverse proxy appropriately).
+
+For a **disposable database only**, run the complete HTTP/MySQL smoke test:
+
+```bash
+RUN_MYSQL_TESTS=1 node --env-file=.env --test tests/*.test.js
+```
+
+This creates synthetic users and a thought, checks login and CRUD, and verifies
+that a second user cannot read the edit form or update another user's thought.
+The GitHub Actions workflow provisions an isolated MySQL 8 service. Without
+`RUN_MYSQL_TESTS=1`, the integration test is explicitly skipped.
+
+Remaining learning-project limitations include no dedicated CSRF tokens,
+no login rate limiting, no password reset, synchronous password hashing and
+file-based sessions. Do not deploy this as a production authentication system.
