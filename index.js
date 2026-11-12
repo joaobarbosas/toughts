@@ -5,6 +5,10 @@ const FileStore = require("session-file-store")(session);
 const flash = require("express-flash");
 
 const app = express();
+if (!process.env.SESSION_SECRET || process.env.SESSION_SECRET.length < 32) {
+  throw new Error('Set SESSION_SECRET to at least 32 characters');
+}
+if (process.env.NODE_ENV === 'production') app.set('trust proxy', 1);
 
 const conn = require("./db/conn");
 
@@ -39,7 +43,7 @@ app.use(express.json());
 app.use(
   session({
     name: "session",
-    secret: "nosso_secret",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: new FileStore({
@@ -47,9 +51,9 @@ app.use(
       path: require("path").join(require("os").tmpdir(), "sessions"),
     }),
     cookie: {
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 360000,
-      expires: new Date(Date.now() + 360000),
       httpOnly: true
     }
   })
@@ -81,6 +85,9 @@ conn
   //.sync({force: true})
   .sync()
   .then(() => {
-    app.listen(3000);
+    app.listen(Number(process.env.PORT || 3001), process.env.HOST || "127.0.0.1");
   })
-  .catch((err) => console.log(err));
+  .catch(() => {
+    console.error("Database startup failed. Check the DB_* configuration.");
+    process.exitCode = 1;
+  });

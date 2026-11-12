@@ -107,8 +107,9 @@ module.exports = class ToughtController {
   static async updateTought(req, res) {
     const id = req.params.id;
 
-    const tought = await Tought.findOne({ where: { id: id }, raw: true });
+    const tought = await Tought.findOne({ where: { id: id, UserId: req.session.userid }, raw: true });
 
+    if (!tought) return res.sendStatus(404);
     res.render("toughts/edit", { tought });
   }
 
@@ -120,7 +121,10 @@ module.exports = class ToughtController {
     };
 
     try {
-      await Tought.update(tought, { where: { id: id } });
+      const [updated] = await Tought.update(tought, {
+        where: { id: id, UserId: req.session.userid },
+      });
+      if (!updated) return res.sendStatus(404);
       req.flash("message", "Pensamento atualizado com sucesso!");
 
       req.session.save(() => {
